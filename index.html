@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 1 - Virtual Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+        }
+
+        .calculator {
+            background: #333;
+            border-radius: 10px;
+            padding: 20px;
+            width: 320px;
+        }
+
+        .display {
+            background: #fff;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: right;
+            font-size: 24px;
+            margin-bottom: 15px;
+            min-height: 60px;
+            word-break: break-all;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 18px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .btn-number {
+            background: #4CAF50;
+        }
+
+        .btn-operator {
+            background: #FF9800;
+        }
+
+        .btn-clear {
+            background: #f44336;
+        }
+
+        .btn-equal {
+            background: #2196F3;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+    </style>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        function Display({ value }) {
+            return <div className="display">{value || "0"}</div>;
+        }
+        function Button({ label, color, onClick }) {
+            return (
+                <button className={`btn btn-${color}`} onClick={() => onClick(label)}>
+                    {label}
+                </button>
+            );
+        }
+        function Calculator() {
+            const [expression, setExpression] = React.useState("");
+            const [result, setResult] = React.useState("");
+
+            function handleClick(value) {
+                if (value === "C") {
+                    setExpression("");
+                    setResult("");
+                } else if (value === "Delete") {
+                    setExpression(expression.slice(0, -1));
+                    setResult("");
+                } else if (value === "=") {
+                    try {
+                        let expr = expression.replace(/×/g, "*").replace(/÷/g, "/");
+                        let res = eval(expr);
+                        setResult(String(res));
+                        setExpression(String(res));
+                    } catch (e) {
+                        setResult("Lỗi");
+                    }
+                } else {
+                    setExpression(expression + value);
+                    setResult("");
+                }
+            }
+
+            const buttons = [
+                { label: "C", color: "clear" }, { label: "Delete", color: "clear" },
+                { label: "÷", color: "operator" }, { label: "×", color: "operator" },
+                { label: "7", color: "number" }, { label: "8", color: "number" },
+                { label: "9", color: "number" }, { label: "-", color: "operator" },
+                { label: "4", color: "number" }, { label: "5", color: "number" },
+                { label: "6", color: "number" }, { label: "+", color: "operator" },
+                { label: "1", color: "number" }, { label: "2", color: "number" },
+                { label: "3", color: "number" }, { label: "=", color: "equal" },
+                { label: "0", color: "number" }, { label: ".", color: "number" },
+            ];
+
+            return (
+                <div>
+                    <h2>Virtual Calculator</h2>
+                    <div className="calculator">
+                        <Display value={result || expression || "0"} />
+                        <div className="buttons">
+                            {buttons.map((btn, i) => (
+                                <Button key={i} label={btn.label} color={btn.color} onClick={handleClick} />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(<Calculator />);
+    </script>
+</body>
+
+</html>
